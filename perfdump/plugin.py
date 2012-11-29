@@ -8,9 +8,9 @@ import nose
 from nose.plugins import Plugin
 
 
+os.remove('perfdump.db')
 sqlite_connection = sqlite3.connect('perfdump.db')
-sqlite_connection.execute("CREATE TABLE IF NOT EXISTS times (file text, file_line int, module text, class text, func text, elapsed float)")
-sqlite_connection.execute("DELETE FROM times")
+sqlite_connection.execute("CREATE TABLE IF NOT EXISTS times (file text, module text, class text, func text, elapsed float)")
 
 
 def get_connection():
@@ -36,15 +36,6 @@ class PerfDumpPlugin(Plugin):
         """
         full_test_file = inspect.getfile(test.test.__class__)
         return full_test_file.replace(os.getcwd(), '')
-    
-    def get_file_line(self, test):
-        """Returns the line number in the given file containing the given test.
-
-        :param test: The test being run
-        :type test: nose.case.Test
-        
-        """
-        return inspect.getsourcelines(test.test.__class__)[1]
 
     def get_module_name(self, test):
         """Returns the name of the module containing the given test.
@@ -93,9 +84,8 @@ class PerfDumpPlugin(Plugin):
         """Records the complete test performance information after it is run"""
         elapsed = time.clock() - self.times[test.id()]
         del self.times[test.id()]
-        q = "INSERT INTO times VALUES('{}', '{}', '{}', '{}', '{}', {})"
+        q = "INSERT INTO times VALUES('{}', '{}', '{}', '{}', {})"
         self.db.execute(q.format(self.get_test_file(test),
-                                 self.get_file_line(test),
                                  self.get_module_name(test),
                                  self.get_class_name(test),
                                  self.get_function_name(test),
@@ -104,6 +94,35 @@ class PerfDumpPlugin(Plugin):
     def report(self, stream):
         """Displays the slowest tests"""
         self.db.commit()
+
+        stream.writeln()
+
+        self.db.row_factory = sqlite3.Row
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM times ORDER BY elapsed DESC LIMIT 10")
+        row = cur.fetchone()
+        while row:
+            stream.writeln('{:.04f}s {}'.format(row['elapsed'],
+                                                row['file'])) 
+            stream.writeln('{:8}{}.{}.{}'.format('',
+                                                 row['module'],
+                                                 row['class'],
+                                                 row['func']))
+            stream.writeln()
+            row = cur.fetchone()
+
+        stream.writeln('-'*10)
+        stream.writeln()
+        
+        cur.execute('SELECT file, SUM(elapsed) FROM times GROUP BY file ORDER BY SUM(elapsed) DESC LIMIT 10')
+        row = cur.fetchone()
+        while row:
+            stream.writeln('{:.04f}s {}'.format(row['SUM(elapsed)'],
+                                                row['file']))
+            stream.writeln()
+            row = cur.fetchone()
+        
+        stream.writeln()
     
     def finalize(self, result):
         """Perform final cleanup for this plugin."""
