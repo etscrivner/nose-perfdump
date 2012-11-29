@@ -3,13 +3,13 @@
 from setuptools import setup, find_packages
 
 
-version = '1.1'
+version = '1.3'
 
 
 long_desc = """
 perfdump is a Nose plugin that collects per-test performance metrics into an
 SQLite3 database and reports the slowest tests, test files, and total time
-spent in tests (minus setUp/setUp) class. It is designed to make profiling
+spent in tests (minus setUp/setUpClass). It is designed to make profiling
 tests to improve their speed easier.
 
 [Github](https://github.com/etscrivner/perfdump)
@@ -23,7 +23,7 @@ setup(
     long_description=long_desc,
     author='Eric Scrivner',
     keywords='nose,nose plugin,profiler,profiling,tests,unittest',
-    install_requires=['sqlite3'],
+    install_requires=[],
     author_email='eric.t.scrivner@gmail.com',
     url='https://github.com/etscrivner/perfdump',
     license='BSD',
