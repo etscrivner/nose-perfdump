@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from distutils.core import setup, find_packages
+from setuptools import setup, find_packages
 
 
-version = '0.0.2'
+version = '1.0'
 
 
 long_desc = """
@@ -28,5 +28,10 @@ setup(
     url='https://github.com/etscrivner/perfdump',
     license='BSD',
     packages=find_packages(),
-    include_package_data=True
+    include_package_data=True,
+    entry_points={
+        'nose.plugins.0.10': [
+            'perfdump = perfdump:PerfDumpPlugin'
+        ]
+    }
 )

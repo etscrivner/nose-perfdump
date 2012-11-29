@@ -133,7 +133,3 @@ class PerfDumpPlugin(Plugin):
     def finalize(self, result):
         """Perform final cleanup for this plugin."""
         self.db.close()
-
-        
-if __name__ == '__main__':
-    nose.main(addplugins=[PerfDumpPlugin()])
