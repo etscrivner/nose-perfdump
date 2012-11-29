@@ -121,6 +121,12 @@ class PerfDumpPlugin(Plugin):
                                                 row['file']))
             stream.writeln()
             row = cur.fetchone()
+
+        cur.execute('SELECT SUM(elapsed) FROM times')
+        row = cur.fetchone()
+        stream.writeln('-'*10)
+        stream.writeln()
+        stream.writeln('Total time: {}s'.format(row['SUM(elapsed)']))
         
         stream.writeln()
     
