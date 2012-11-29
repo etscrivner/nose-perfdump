@@ -7,7 +7,7 @@ version = '1.0'
 
 
 long_desc = """
-perfdump is a Nose plugin that collects per-test performance metrics into an
+nose-perfdump is a Nose plugin that collects per-test performance metrics into an
 SQLite3 database and reports the slowest tests, test files, and total time
 spent in tests (minus setUp/setUpClass). It is designed to make profiling
 tests to improve their speed easier.
@@ -17,9 +17,9 @@ tests to improve their speed easier.
 
 
 setup(
-    name='perfdump',
+    name='nose-perfdump',
     version=version,
-    description='Nose plugin which displays per-test performance metrics.',
+    description='Dump per-test performance metrics to an SQLite database for querying.',
     long_description=long_desc,
     author='Eric Scrivner',
     keywords='nose,nose plugin,profiler,profiling,tests,unittest',
