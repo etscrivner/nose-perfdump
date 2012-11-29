@@ -8,16 +8,13 @@ import nose
 from nose.plugins import Plugin
 
 
-try:
-    os.remove('perfdump.db')
-except:
-    pass
-
-sqlite_connection = sqlite3.connect('perfdump.db')
-sqlite_connection.execute("CREATE TABLE IF NOT EXISTS times (file text, module text, class text, func text, elapsed float)")
-
-
 def get_connection():
+    try:
+        os.remove('perfdump.db')
+    except:
+        pass
+    sqlite_connection = sqlite3.connect('perfdump')
+    sqlite_connection.execute("CREATE TABLE IF NOT EXISTS times (file text, module text, class text, func text, elapsed float)")
     return sqlite_connection
 
 
