@@ -7,6 +7,7 @@ from nose.plugins import Plugin
 
 from perfdump.connection import SqliteConnection
 from perfdump.models import MetaFunc, MetaTest, SetupTime, TestTime
+from perfdump.html import HtmlReport
 
 
 class PerfDumpPlugin(Plugin):
@@ -14,8 +15,11 @@ class PerfDumpPlugin(Plugin):
     elapsed times and print out the slowest 10 tests in your codebase."""
     
     name = 'perfdump'
+    
     test_times = {}
     setup_times = {}
+
+    html_output_file = None
 
     @staticmethod
     def name_for_obj(i):
@@ -35,7 +39,7 @@ class PerfDumpPlugin(Plugin):
                 meta_func = MetaFunc.get(f)
                 SetupTime.create(meta_func.file, 
                                  meta_func.module, 
-                                 meta_func.cls,
+                                 meta_func.cls,                                 
                                  key_name,
                                  ctx[key_name])
 
@@ -48,12 +52,18 @@ class PerfDumpPlugin(Plugin):
     def options(self, parser, env=os.environ):
         """Handle parsing additional command-line options"""
         super(PerfDumpPlugin, self).options(parser, env=env)
+        parser.add_option("", "--perfdump-html", dest="perfdump_html_file",
+                          help="Set destination for HTML report output")
 
     def configure(self, options, conf):
         """Configure this plugin using the given options"""
         super(PerfDumpPlugin, self).configure(options, conf)
         if not self.enabled:
             return
+        try:
+            self.html_output_file = options.perfdump_html_file
+        except:
+            pass
         self.db = SqliteConnection.get(self.database_name)
 
     def startContext(self, context):
@@ -62,7 +72,7 @@ class PerfDumpPlugin(Plugin):
                                             'tearDown': 0}
 
         if hasattr(context, 'setUp'):
-            for k in ('setUp', 'tearDown'):
+            for k in ['setUp']:#('setUp', 'tearDown'):
                 old_f = getattr(context, k)
                 new_f = self.record_elapsed_decorator(old_f, ctx, k)
                 setattr(context, k, new_f)
@@ -87,11 +97,24 @@ class PerfDumpPlugin(Plugin):
         self.db.commit()
 
         stream.writeln()
+        stream.writeln("Test times")
+        self.draw_divider(stream)
+        
         self.display_slowest_tests(stream)
-        stream.writeln('-'*10)
+        
         stream.writeln()
+        stream.writeln("Setup times")
+        self.draw_divider(stream)
         self.display_slowest_setups(stream)
 
+        if self.html_output_file:
+            HtmlReport.write(self.html_output_file)
+
+    def draw_divider(self, stream):
+        """Draw a set of line dividers"""
+        stream.writeln('-'*10)
+        stream.writeln()
+        
     def display_slowest_tests(self, stream):
         """Prints a report regarding the slowest individual tests."""
         # Display the slowest individual tests
