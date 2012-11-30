@@ -31,7 +31,7 @@ setup(
     include_package_data=True,
     entry_points={
         'nose.plugins.0.10': [
-            'perfdump = nose-perfdump:PerfDumpPlugin'
+            'perfdump = perfdump:PerfDumpPlugin'
         ]
     }
 )
