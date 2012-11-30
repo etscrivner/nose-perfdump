@@ -88,6 +88,8 @@ class PerfDumpPlugin(Plugin):
 
         stream.writeln()
         self.display_slowest_tests(stream)
+        stream.writeln('-'*10)
+        stream.writeln()
         self.display_slowest_setups(stream)
 
     def display_slowest_tests(self, stream):
