@@ -14,7 +14,7 @@ class SqliteConnection(object):
         
         """
         test_times_schema = """
-        CREATE TABLE IF NOT EXISTS times (
+        CREATE TABLE IF NOT EXISTS test_times (
           file text,
           module text,
           class text,

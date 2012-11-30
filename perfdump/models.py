@@ -20,18 +20,22 @@ class MetaTest(object):
     
     @property
     def file(self):
+        """Return the name of the file containing the test."""
         return self.full_test_file.replace(os.getcwd(), '').replace('.pyc', '.py')
     
     @property
     def module(self):
+        """Return the name of the module containing the test."""
         return inspect.getmodulename(self.full_test_file)
     
     @property
     def cls(self):
+        """Return the name of the test class."""
         return inspect.getmro(self.test.test.__class__)[0].__name__
     
     @property
     def func(self):
+        """Return the name of the test function."""
         return self.test.id().split('.')[-1]
     
     def __init__(self, test):
@@ -122,7 +126,7 @@ class TestTime(BaseTimeModel):
     """Represents a time metric for a single test."""
     
     meta = {
-        'table': 'times'
+        'table': 'test_times'
     }
     
 
