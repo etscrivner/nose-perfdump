@@ -3,14 +3,14 @@
 from setuptools import setup, find_packages
 
 
-version = '1.0'
+version = '1.1'
 
 
 long_desc = """
 nose-perfdump is a Nose plugin that collects per-test performance metrics into an
 SQLite3 database and reports the slowest tests, test files, and total time
-spent in tests (minus setUp/setUpClass). It is designed to make profiling
-tests to improve their speed easier.
+spent in tests. It is designed to make profiling tests to improve their speed
+easier.
 
 [Github](https://github.com/etscrivner/nose-perfdump)
 """
