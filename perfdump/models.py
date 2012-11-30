@@ -1,8 +1,50 @@
+import inspect
+import os
 import sqlite3
 
 from perfdump.connection import SqliteConnection
 
 
+class MetaTest(object):
+    """Represents meta-information regarding a given test."""
+    
+    @classmethod
+    def get(cls, test):
+        """Returns a new meta-test initialized with the given test.
+        
+        :param test: The test
+        :type test: nose.case.Test
+        
+        """
+        return MetaTest(test)
+    
+    @property
+    def file(self):
+        return self.full_test_file.replace(os.getcwd(), '').replace('.pyc', '.py')
+    
+    @property
+    def module(self):
+        return inspect.getmodulename(self.full_test_file)
+    
+    @property
+    def cls(self):
+        return inspect.getmro(self.test.test.__class__)[0].__name__
+    
+    @property
+    def func(self):
+        return self.test.id().split('.')[-1]
+    
+    def __init__(self, test):
+        """Initialize this class with test information
+        
+        :param test: The test
+        :type test: nose.case.Test
+        
+        """
+        self.full_test_file = inspect.getfile(test.test.__class__)
+        self.test = test
+    
+    
 class BaseTimeModel(object):
     """Base class for a time sample."""
     

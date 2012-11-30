@@ -1,14 +1,10 @@
-import inspect
-import logging
 import os
-import sqlite3
 import time
 
-import nose
 from nose.plugins import Plugin
 
 from perfdump.connection import SqliteConnection
-from perfdump.models import TestTime
+from perfdump.models import TestTime, MetaTest
 
 
 class PerfDumpPlugin(Plugin):
@@ -21,46 +17,6 @@ class PerfDumpPlugin(Plugin):
     def __init__(self):
         super(PerfDumpPlugin, self).__init__()
         self.database_name = 'perfdump'
-        
-    def get_test_file(self, test):
-        """Returns the partial path from the current working directory for the
-        file containing the given test.
-
-        :param test: The test being run
-        :type test: nose.case.Test
-        :rtype: str
-
-        """
-        full_test_file = inspect.getfile(test.test.__class__)
-        return full_test_file.replace(os.getcwd(), '')
-
-    def get_module_name(self, test):
-        """Returns the name of the module containing the given test.
-
-        :param test: The test being run
-        :type test: nose.case.Test
-
-        """
-        full_test_file = inspect.getfile(test.test.__class__)
-        return inspect.getmodulename(full_test_file)
-
-    def get_class_name(self, test):
-        """Returns the name of the test class containing this test.
-
-        :param test: The test being run
-        :type test: nose.case.Test
-
-        """
-        return inspect.getmro(test.test.__class__)[0].__name__
-
-    def get_function_name(self, test):
-        """Returns the name of the test function.
-
-        :param test: Test
-        :type test: nose.case.Test
-
-        """
-        return test.id().split('.')[-1]
         
     def options(self, parser, env=os.environ):
         """Handle parsing additional command-line options"""
@@ -81,10 +37,11 @@ class PerfDumpPlugin(Plugin):
         """Records the complete test performance information after it is run"""
         elapsed = time.clock() - self.times[test.id()]
         del self.times[test.id()]
-        TestTime.create(self.get_test_file(test),
-                        self.get_module_name(test),
-                        self.get_class_name(test),
-                        self.get_function_name(test),
+        meta_test = MetaTest.get(test)
+        TestTime.create(meta_test.file,
+                        meta_test.module,
+                        meta_test.cls,
+                        meta_test.func,
                         elapsed)
 
     def report(self, stream):
