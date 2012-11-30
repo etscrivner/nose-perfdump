@@ -1,10 +1,12 @@
+from functools import wraps
+import inspect
 import os
 import time
 
 from nose.plugins import Plugin
 
 from perfdump.connection import SqliteConnection
-from perfdump.models import TestTime, MetaTest
+from perfdump.models import MetaFunc, MetaTest, SetupTime, TestTime
 
 
 class PerfDumpPlugin(Plugin):
@@ -12,8 +14,33 @@ class PerfDumpPlugin(Plugin):
     elapsed times and print out the slowest 10 tests in your codebase."""
     
     name = 'perfdump'
-    times = {}
+    test_times = {}
+    setup_times = {}
 
+    @staticmethod
+    def name_for_obj(i):
+        if inspect.ismodule(i):
+            return i.__name__
+        else:
+            return "%s.%s" % (i.__module__, i.__name__)
+
+    def record_elapsed_decorator(self, f, ctx, key_name):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            start_time = time.clock()
+            try:
+                return f(*args, **kwargs)
+            finally:
+                ctx[key_name] = time.clock() - start_time
+                meta_func = MetaFunc.get(f)
+                SetupTime.create(meta_func.file, 
+                                 meta_func.module, 
+                                 meta_func.cls,
+                                 key_name,
+                                 ctx[key_name])
+
+        return wrapped
+    
     def __init__(self):
         super(PerfDumpPlugin, self).__init__()
         self.database_name = 'perfdump'
@@ -29,14 +56,25 @@ class PerfDumpPlugin(Plugin):
             return
         self.db = SqliteConnection.get(self.database_name)
 
+    def startContext(self, context):
+        ctx_name = self.name_for_obj(context)
+        self.setup_times[ctx_name] = ctx = {'setUp': 0,
+                                            'tearDown': 0}
+
+        if hasattr(context, 'setUp'):
+            for k in ('setUp', 'tearDown'):
+                old_f = getattr(context, k)
+                new_f = self.record_elapsed_decorator(old_f, ctx, k)
+                setattr(context, k, new_f)
+    
     def beforeTest(self, test):
         """Records the base time before the test is run."""
-        self.times[test.id()] = time.clock()
+        self.test_times[test.id()] = time.clock()
 
     def afterTest(self, test):
         """Records the complete test performance information after it is run"""
-        elapsed = time.clock() - self.times[test.id()]
-        del self.times[test.id()]
+        elapsed = time.clock() - self.test_times[test.id()]
+        del self.test_times[test.id()]
         meta_test = MetaTest.get(test)
         TestTime.create(meta_test.file,
                         meta_test.module,
@@ -49,7 +87,10 @@ class PerfDumpPlugin(Plugin):
         self.db.commit()
 
         stream.writeln()
+        self.display_slowest_tests(stream)
 
+    def display_slowest_tests(self, stream):
+        """Prints a report regarding the slowest individual tests."""
         # Display the slowest individual tests
         slowest_tests = TestTime.get_slowest_tests(10)
         for row in slowest_tests:

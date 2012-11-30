@@ -5,6 +5,45 @@ import sqlite3
 from perfdump.connection import SqliteConnection
 
 
+class MetaFunc(object):
+    """Represents meta-information regarding a given function."""
+    
+    @classmethod
+    def get(cls, function):
+        """Returns a new meta-function initialized with the given test.
+        
+        :param func: The function
+        :type test: instancemethod
+        
+        """
+        return MetaFunc(function)
+    
+    @property
+    def file(self):
+        """Return the name of the file containing the function."""
+        return self.full_test_file.replace(os.getcwd(), '').replace('.pyc', '.py')
+    
+    @property
+    def module(self):
+        """Return the name of the module"""
+        return inspect.getmodulename(self.full_test_file)
+    
+    @property
+    def cls(self):
+        """Return the class name"""
+        return inspect.getmro(self.function.im_class)[0].__name__
+    
+    def __init__(self, function):
+        """Initialize the class with the given instancemethod information.
+        
+        :param function: The function
+        :type function: instancemethod
+        
+        """
+        self.full_test_file = inspect.getfile(function.im_class)
+        self.function = function
+                
+        
 class MetaTest(object):
     """Represents meta-information regarding a given test."""
     
