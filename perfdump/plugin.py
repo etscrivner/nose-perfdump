@@ -35,7 +35,7 @@ class PerfDumpPlugin(Plugin):
                 meta_func = MetaFunc.get(f)
                 SetupTime.create(meta_func.file, 
                                  meta_func.module, 
-                                 meta_func.cls,
+                                 meta_func.cls,                                 
                                  key_name,
                                  ctx[key_name])
 
@@ -62,7 +62,7 @@ class PerfDumpPlugin(Plugin):
                                             'tearDown': 0}
 
         if hasattr(context, 'setUp'):
-            for k in ('setUp', 'tearDown'):
+            for k in ['setUp']:#('setUp', 'tearDown'):
                 old_f = getattr(context, k)
                 new_f = self.record_elapsed_decorator(old_f, ctx, k)
                 setattr(context, k, new_f)
