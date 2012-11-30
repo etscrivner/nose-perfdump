@@ -88,6 +88,7 @@ class PerfDumpPlugin(Plugin):
 
         stream.writeln()
         self.display_slowest_tests(stream)
+        self.display_slowest_setups(stream)
 
     def display_slowest_tests(self, stream):
         """Prints a report regarding the slowest individual tests."""
@@ -116,6 +117,35 @@ class PerfDumpPlugin(Plugin):
         stream.writeln('-'*10)
         stream.writeln()
         stream.writeln('Total time: {:.05f}s'.format(TestTime.get_total_time()))
+        
+        stream.writeln()
+        
+    def display_slowest_setups(self, stream):
+        """Prints a report regarding the slowest setUp/tearDown times."""
+        slowest_tests = SetupTime.get_slowest_tests(10)
+        for row in slowest_tests:
+            stream.writeln('{:.05f}s {}'.format(row['elapsed'],
+                                                row['file'])) 
+            stream.writeln('{:9}{}.{}.{}'.format('',
+                                                 row['module'],
+                                                 row['class'],
+                                                 row['func']))
+            stream.writeln()
+
+        stream.writeln('-'*10)
+        stream.writeln()
+
+        # Display the slowest test files
+        slowest_files = SetupTime.get_slowest_files(10)
+        for row in slowest_files:
+            stream.writeln('{:.05f}s {}'.format(row['sum_elapsed'],
+                                                row['file']))
+            stream.writeln()
+
+        # Display the total time spent in tests
+        stream.writeln('-'*10)
+        stream.writeln()
+        stream.writeln('Total time: {:.05f}s'.format(SetupTime.get_total_time()))
         
         stream.writeln()
     
