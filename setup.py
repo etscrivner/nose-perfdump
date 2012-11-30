@@ -12,7 +12,7 @@ SQLite3 database and reports the slowest tests, test files, and total time
 spent in tests (minus setUp/setUpClass). It is designed to make profiling
 tests to improve their speed easier.
 
-[Github](https://github.com/etscrivner/perfdump)
+[Github](https://github.com/etscrivner/nose-perfdump)
 """
 
 
@@ -25,13 +25,13 @@ setup(
     keywords='nose,nose plugin,profiler,profiling,tests,unittest',
     install_requires=['nose'],
     author_email='eric.t.scrivner@gmail.com',
-    url='https://github.com/etscrivner/perfdump',
+    url='https://github.com/etscrivner/nose-perfdump',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,
     entry_points={
         'nose.plugins.0.10': [
-            'perfdump = perfdump:PerfDumpPlugin'
+            'perfdump = nose-perfdump:PerfDumpPlugin'
         ]
     }
 )
