@@ -114,7 +114,15 @@ class BaseTimeModel(object):
                                                 cls_name,
                                                 func,
                                                 elapsed))
-    
+
+    @classmethod
+    def is_valid_row(cls, row):
+        """Indicates whether or not the given row contains valid data."""
+        for k in row.keys():
+            if row[k] is None:
+                return False
+        return True
+        
     @classmethod
     def get_cursor(cls):
         """Return a message list cursor that returns sqlite3.Row objects"""
@@ -146,7 +154,11 @@ class BaseTimeModel(object):
         cur = cls.get_cursor()
         q = "SELECT file, SUM(elapsed) as sum_elapsed FROM {} ORDER BY sum_elapsed DESC LIMIT {}"
         cur.execute(q.format(cls.meta['table'], num))
-        return cur.fetchall()
+        result = cur.fetchall()
+        # Don't return the weird invalid row if no tests were run
+        if not all([cls.is_valid_row(x) for x in result]):
+            return []
+        return result
     
     @classmethod
     def get_total_time(cls):
@@ -158,7 +170,8 @@ class BaseTimeModel(object):
         cur = cls.get_cursor()
         q = "SELECT SUM(elapsed) FROM {}"
         cur.execute(q.format(cls.meta['table']))
-        return cur.fetchone()['SUM(elapsed)']
+        result = cur.fetchone()['SUM(elapsed)']
+        return result if result else 0.0
     
     
 class TestTime(BaseTimeModel):

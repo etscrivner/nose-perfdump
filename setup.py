@@ -23,7 +23,7 @@ setup(
     long_description=long_desc,
     author='Eric Scrivner',
     keywords='nose,nose plugin,profiler,profiling,tests,unittest',
-    install_requires=['nose', 'jinja2'],
+    install_requires=['nose'],
     author_email='eric.t.scrivner@gmail.com',
     url='https://github.com/etscrivner/nose-perfdump',
     license='BSD',
