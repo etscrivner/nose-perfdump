@@ -32,6 +32,9 @@ setup(
     entry_points={
         'nose.plugins.0.10': [
             'perfdump = perfdump:PerfDumpPlugin'
+        ],
+        'console_scripts': [
+            'perfdump.console:main'
         ]
     }
 )
