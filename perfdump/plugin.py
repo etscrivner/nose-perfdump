@@ -77,6 +77,10 @@ class PerfDumpPlugin(Plugin):
     def __init__(self):
         super(PerfDumpPlugin, self).__init__()
         self.database_name = 'perfdump'
+        try:
+            os.remove('{}.db'.format(self.database_name))
+        except:
+            pass
         
     def options(self, parser, env=os.environ):
         """Handle parsing additional command-line options"""

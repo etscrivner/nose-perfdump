@@ -66,12 +66,7 @@ class SqliteConnection(object):
                    setup_times_schema]
         
         db_file = '{}.db'.format(dbname)
-        
-        try:
-            os.remove(db_file)
-        except:
-            pass
-        
+                
         cls.connection = sqlite3.connect(db_file)
         for s in schemas:
             cls.connection.execute(s)

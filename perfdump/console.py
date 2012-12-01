@@ -30,14 +30,15 @@
 import cmd
 from pyparsing import Keyword, ParseException
 import re
-import perfdump.models
+
+from perfdump.connection import SqliteConnection
 
 # Keywords
 t_slowest = Keyword('slowest')
 t_fastest = Keyword('fastest')
 
-t_test = Keyword('test')
-t_setup = Keyword('setup')
+t_test = Keyword('tests')
+t_setup = Keyword('setups')
 
 t_file = Keyword('file')
 t_module = Keyword('module')
@@ -61,6 +62,10 @@ class Console(cmd.Cmd):
     
     prompt = "perfdump > "
 
+    def __init__(self):
+        super(Console, self).__init__()
+        self.db = SqliteConnection.get()
+        
     def precmd(self, line):
         """Parse the command on the given line.
         
@@ -78,18 +83,21 @@ class Console(cmd.Cmd):
             print line, "->", parts
 
             if len(parts) == 2:
-                return "simple_report"
+                self.simple_report(parts)
             else:
-                return "grouped_report"
+                self.grouped_report(parts)
         except ParseException, err:
             pass
         
         return ""
 
-    def do_simple_report(self, line):
-        parts = stmt.parseString(line)
+    def simple_report(self, parts):
+        q = "SELECT * FROM {} ORDER BY elapsed {} LIMIT 10"
 
-    def do_grouped_report(self, line):
+        table = 'test_times' if parts[1] == 'tests' else 'setup_times'
+        order = 'DESC' if parts[0] == 'slowest' else 'ASC'
+
+    def grouped_report(self, parts):
         pass
             
     def do_exit(self, line):
