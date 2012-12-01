@@ -32,9 +32,6 @@ class HtmlReport(object):
 
         
         f.write('<h1>Setup times</h1>')
-        f.write('<table>')
-        f.write('<tr><th>Time</th><th>Test info</th></tr>')
-        f.write('</table>')
 
         f.write('<table>')
         f.write('<tr><th>Time</th><th>Test info</th></tr>')
@@ -52,3 +49,5 @@ class HtmlReport(object):
         
         f.write('</body>')
         f.write('</html>')
+
+        f.close()
