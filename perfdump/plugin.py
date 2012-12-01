@@ -97,13 +97,13 @@ class PerfDumpPlugin(Plugin):
         self.db.commit()
 
         stream.writeln()
-        stream.writeln("Test times")
+        stream.writeln("10 slowest test times")
         self.draw_divider(stream)
         
         self.display_slowest_tests(stream)
         
         stream.writeln()
-        stream.writeln("Setup times")
+        stream.writeln("10 slowest setup times")
         self.draw_divider(stream)
         self.display_slowest_setups(stream)
 

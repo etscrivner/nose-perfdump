@@ -7,11 +7,11 @@ nose.
 
     --with-perfdump - Enables perfdump output
 
-    --perfdump-html=[path-to-file] - Dump the full perfdump output to HTML file
+    --perfdump-html=[path-to-file] - Dump the full perfdump report to an HTML file
 
 The output of perfdump in the console looks something like the following:
 
-    Test times
+    10 slowest test times
     ----------
     
     0.00065s /test_something.py
@@ -26,7 +26,7 @@ The output of perfdump in the console looks something like the following:
     Total time: 0.00065s
     
     
-    Setup times
+    10 slowest setup times
     ----------
     
     0.00000s /test_something.py
