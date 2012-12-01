@@ -1,3 +1,5 @@
+# This file is part of nose-perftest.
+#
 # Copyright (c) 2012, Eric Scrivner and AUTHORS
 # All rights reserved.
 #
@@ -24,6 +26,7 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
 import inspect
 import os
 import sqlite3

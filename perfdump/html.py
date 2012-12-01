@@ -1,3 +1,5 @@
+# This file is part of nose-perftest.
+#
 # Copyright (c) 2012, Eric Scrivner and AUTHORS
 # All rights reserved.
 #
