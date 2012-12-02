@@ -30,6 +30,7 @@
 import cmd
 from pyparsing import Keyword, ParseException
 import re
+import sqlite3
 
 from perfdump.connection import SqliteConnection
 
@@ -62,9 +63,9 @@ class Console(cmd.Cmd):
     
     prompt = "perfdump > "
 
-    def __init__(self):
-        super(Console, self).__init__()
+    def preloop(self):
         self.db = SqliteConnection.get()
+        self.db.row_factory = sqlite3.Row
         
     def precmd(self, line):
         """Parse the command on the given line.
@@ -80,7 +81,6 @@ class Console(cmd.Cmd):
         
         try:
             parts = stmt.parseString(line)
-            print line, "->", parts
 
             if len(parts) == 2:
                 self.simple_report(parts)
@@ -97,8 +97,37 @@ class Console(cmd.Cmd):
         table = 'test_times' if parts[1] == 'tests' else 'setup_times'
         order = 'DESC' if parts[0] == 'slowest' else 'ASC'
 
+        query = q.format(table, order)
+        cur = self.db.cursor()
+        cur.execute(q.format(table, order))
+        result = cur.fetchall()
+        for row in result:
+            print '{:.05f}s {}'.format(row['elapsed'],
+                                       row['file'])
+            print '{:9}{}.{}.{}'.format('',
+                                        row['module'],
+                                        row['class'],
+                                        row['func'])
+            print "\n"
+            
     def grouped_report(self, parts):
-        pass
+        q = "SELECT {}, SUM(elapsed) FROM {} ORDER BY SUM(elapsed) {} LIMIT 10"
+
+        part = parts[3]
+        if parts[3] == 'function':
+            part = 'func'
+
+        table = 'test_times' if parts[1] == 'tests' else 'setup_times'
+        order = 'DESC' if parts[0] == 'slowest' else 'ASC'
+        
+        query = q.format(part, table, order)
+        cur = self.db.cursor()
+        cur.execute(query)
+        result = cur.fetchall()
+        for row in result:
+            print '{:.05f}s {}'.format(row['SUM(elapsed)'],
+                                       row[part])
+            print "\n"
             
     def do_exit(self, line):
         """End the console process."""
