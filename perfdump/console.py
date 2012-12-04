@@ -76,7 +76,7 @@ class Console(cmd.Cmd):
         """
         line = line.lower()
         
-        if line == 'exit':
+        if line == 'exit' or line == 'help':
             return line
         
         try:
@@ -89,7 +89,7 @@ class Console(cmd.Cmd):
         except ParseException, err:
             pass
         
-        return ""
+        return "none"
 
     def simple_report(self, parts):
         q = "SELECT * FROM {} ORDER BY elapsed {} LIMIT 10"
@@ -128,10 +128,38 @@ class Console(cmd.Cmd):
             print '{:.05f}s {}'.format(row['SUM(elapsed)'],
                                        row[part])
             print "\n"
-            
+
+    def do_none(self, line):
+        return False
+    
     def do_exit(self, line):
         """End the console process."""
         return True
+
+    def do_help(self, line):
+        """Displays help information."""
+        print ""
+        print "Perfdump CLI provides a handful of simple ways to query your"
+        print "performance data."
+        print ""
+        print "The simplest queries are of the form:"
+        print ""
+        print "\t[slowest|fastest] [tests|setups]"
+        print ""
+        print "For example:"
+        print ""
+        print "\tperfdump > slowest tests"
+        print ""
+        print "Prints the slowest 10 tests"
+        print ""
+        print "Additional grouping of results can be request."
+        print ""
+        print "\tperfdump > slowest tests groupby file"
+        print ""
+        print "Grouping options include:"
+        print ""
+        print "\tfile | module | class | function"
+        print ""
     
 
 def main():
