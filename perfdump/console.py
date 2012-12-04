@@ -111,7 +111,7 @@ class Console(cmd.Cmd):
             print "\n"
             
     def grouped_report(self, parts):
-        q = "SELECT {}, SUM(elapsed) FROM {} ORDER BY SUM(elapsed) {} LIMIT 10"
+        q = "SELECT {}, SUM(elapsed) FROM {} GROUP BY {} ORDER BY SUM(elapsed) {} LIMIT 10"
 
         part = parts[3]
         if parts[3] == 'function':
@@ -120,7 +120,7 @@ class Console(cmd.Cmd):
         table = 'test_times' if parts[1] == 'tests' else 'setup_times'
         order = 'DESC' if parts[0] == 'slowest' else 'ASC'
         
-        query = q.format(part, table, order)
+        query = q.format(part, table, part, order)
         cur = self.db.cursor()
         cur.execute(query)
         result = cur.fetchall()
