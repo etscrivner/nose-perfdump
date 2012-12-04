@@ -69,7 +69,10 @@ class MetaFunc(object):
         :type function: instancemethod
         
         """
-        self.full_test_file = inspect.getfile(function.im_class)
+        if function.im_self is not None:
+            self.full_test_file = inspect.getfile(function.im_self)
+        else:
+            self.full_test_file = inspect.getfile(function.im_class)
         self.function = function
                 
         

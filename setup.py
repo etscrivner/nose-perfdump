@@ -34,7 +34,7 @@ setup(
             'perfdump = perfdump:PerfDumpPlugin'
         ],
         'console_scripts': [
-            'perfdump.console:main'
+            'perfdump-cli = perfdump.console:main'
         ]
     }
 )
