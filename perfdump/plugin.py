@@ -112,18 +112,18 @@ class PerfDumpPlugin(Plugin):
     
     def beforeTest(self, test):
         """Records the base time before the test is run."""
-        self.test_times[test.id()] = time.clock()
+        self.test_times[test.id()] = time.time()
 
     def afterTest(self, test):
         """Records the complete test performance information after it is run"""
-        elapsed = time.clock() - self.test_times[test.id()]
-        del self.test_times[test.id()]
+        elapsed = time.time() - self.test_times[test.id()]
         meta_test = MetaTest.get(test)
         TestTime.create(meta_test.file,
                         meta_test.module,
                         meta_test.cls,
                         meta_test.func,
                         elapsed)
+        del self.test_times[test.id()]
 
     def report(self, stream):
         """Displays the slowest tests"""

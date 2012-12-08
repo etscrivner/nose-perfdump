@@ -23,19 +23,24 @@ nose.
 
 The output of perfdump in the console looks something like the following:
 
+    ..
+    
     10 slowest test times
     ----------
     
-    0.00065s /test_something.py
-             test_something.AddTest.test_something
+    2.00133s /test_something.py
+             test_something.AddTest.test_slow_addition
+    
+    0.00072s /test_something.py
+             test_something.AddTest.test_addition
     
     ----------
     
-    0.00065s /test_something.py
+    2.00205s /test_something.py
     
     ----------
     
-    Total time: 0.00065s
+    Total time: 2.00205s
     
     
     10 slowest setup times
@@ -44,10 +49,46 @@ The output of perfdump in the console looks something like the following:
     0.00000s /test_something.py
              test_something.AddTest.setUp
     
-    ----------
-    
     0.00000s /test_something.py
+             test_something.AddTest.setUp
     
     ----------
     
-    Total time: 0.00000s
+    0.00001s /test_something.py
+    
+    ----------
+    
+    Total time: 0.00001s
+    
+    ----------------------------------------------------------------------
+    Ran 2 tests in 2.026s
+    
+    OK
+
+# CLI Tool
+
+There is also a command-line interface (CLI) tool provided with nose-perfdump
+called perfdump-cli that allows for easier querying of the sqlite database.
+    
+    perfdump > help
+    
+    Perfdump CLI provides a handful of simple ways to query your
+    performance data.
+    
+    The simplest queries are of the form:
+    
+	    [slowest|fastest] [tests|setups]
+    
+    For example:
+    
+	    perfdump > slowest tests
+    
+    Prints the slowest 10 tests
+    
+    Additional grouping of results can be request.
+    
+	    perfdump > slowest tests groupby file
+    
+    Grouping options include:
+    
+	    file | module | class | function
