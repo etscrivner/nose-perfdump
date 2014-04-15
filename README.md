@@ -24,45 +24,48 @@ nose.
 The output of perfdump in the console looks something like the following:
 
     ..
+    + 10 slowest test times +
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Per test breakdown
+    +----------+--------------------------+------------------------------------------------+
+    | Elapsed  | File                     | Method                                         |
+    +----------+--------------------------+------------------------------------------------+
+    | 1.07604s | /tests/test_something.py | test_something.AdditionTest.test_slow_addition |
+    | 0.00106s | /tests/test_something.py | test_something.AdditionTest.test_fast_addition |
+    +----------+--------------------------+------------------------------------------------+
     
-    10 slowest test times
-    ----------
+    Per file breakdown
+    +----------+--------------------------+
+    | Elapsed  | File                     |
+    +----------+--------------------------+
+    | 1.07710s | /tests/test_something.py |
+    +----------+--------------------------+
     
-    2.00133s /test_something.py
-             test_something.AddTest.test_slow_addition
+    *** Total test time: 1.07710s
     
-    0.00072s /test_something.py
-             test_something.AddTest.test_addition
+    + 10 slowest setup times +
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    ----------
+    Per setup breakdown
+    +----------+--------------------------+-----------------------------------+
+    | Elapsed  | File                     | Method                            |
+    +----------+--------------------------+-----------------------------------+
+    | 0.00001s | /tests/test_something.py | test_something.AdditionTest.setUp |
+    | 0.00000s | /tests/test_something.py | test_something.AdditionTest.setUp |
+    +----------+--------------------------+-----------------------------------+
     
-    2.00205s /test_something.py
+    Per file breakdown
+    +----------+--------------------------+
+    | Elapsed  | File                     |
+    +----------+--------------------------+
+    | 0.00001s | /tests/test_something.py |
+    +----------+--------------------------+
     
-    ----------
-    
-    Total time: 2.00205s
-    
-    
-    10 slowest setup times
-    ----------
-    
-    0.00000s /test_something.py
-             test_something.AddTest.setUp
-    
-    0.00000s /test_something.py
-             test_something.AddTest.setUp
-    
-    ----------
-    
-    0.00001s /test_something.py
-    
-    ----------
-    
-    Total time: 0.00001s
-    
+    ***  Total setup time: 0.00001s
     ----------------------------------------------------------------------
-    Ran 2 tests in 2.026s
-    
+    Ran 2 tests in 1.082s
+
     OK
 
 # CLI Tool
