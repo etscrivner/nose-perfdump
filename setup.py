@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 
-version = '1.4'
+version = '1.5'
 
 
 long_desc = """
@@ -23,7 +23,7 @@ setup(
     long_description=long_desc,
     author='Eric Scrivner',
     keywords='nose,nose plugin,profiler,profiling,tests,unittest',
-    install_requires=['nose', 'pyparsing'],
+    install_requires=['nose', 'pyparsing', 'prettytable'],
     author_email='eric.t.scrivner@gmail.com',
     url='https://github.com/etscrivner/nose-perfdump',
     license='BSD',

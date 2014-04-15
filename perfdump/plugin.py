@@ -34,6 +34,8 @@ import time
 
 from nose.plugins import Plugin
 
+import prettytable
+
 from perfdump.connection import SqliteConnection
 from perfdump.models import MetaFunc, MetaTest, SetupTime, TestTime
 from perfdump.html import HtmlReport
@@ -130,82 +132,88 @@ class PerfDumpPlugin(Plugin):
         self.db.commit()
 
         stream.writeln()
-        stream.writeln("10 slowest test times")
-        self.draw_divider(stream)
+        self.draw_header(stream, "+ 10 slowest test times +")
         
         self.display_slowest_tests(stream)
         
         stream.writeln()
-        stream.writeln("10 slowest setup times")
-        self.draw_divider(stream)
+        self.draw_header(stream, "+ 10 slowest setup times +")
         self.display_slowest_setups(stream)
 
         if self.html_output_file:
             HtmlReport.write(self.html_output_file)
 
+    def draw_header(self, stream, header):
+        """Draw header with underline"""
+        stream.writeln(header)
+        stream.writeln('~' * len(header))
+        stream.writeln()
+
     def draw_divider(self, stream):
         """Draw a set of line dividers"""
         stream.writeln('-'*10)
         stream.writeln()
-        
+
     def display_slowest_tests(self, stream):
-        """Prints a report regarding the slowest individual tests."""
-        # Display the slowest individual tests
+        table = prettytable.PrettyTable(['Elapsed', 'File', 'Method'])
+        table.align['Method'] = 'l'
+        table.align['File'] = 'l'
+
+        stream.writeln('Per test breakdown')
+
         slowest_tests = TestTime.get_slowest_tests(10)
         for row in slowest_tests:
-            stream.writeln('{:.05f}s {}'.format(row['elapsed'],
-                                                row['file'])) 
-            stream.writeln('{:9}{}.{}.{}'.format('',
-                                                 row['module'],
-                                                 row['class'],
-                                                 row['func']))
-            stream.writeln()
+            table.add_row(['{:.05f}s'.format(row['elapsed']),
+                           row['file'],
+                           '{}.{}.{}'.format(
+                               row['module'], row['class'], row['func'])])
 
-        stream.writeln('-'*10)
+        stream.writeln(table.get_string())
         stream.writeln()
 
-        # Display the slowest test files
+        stream.writeln('Per file breakdown')
+        table = prettytable.PrettyTable(['Elapsed', 'File'])
+        table.align['File'] = 'l'
         slowest_files = TestTime.get_slowest_files(10)
         for row in slowest_files:
-            stream.writeln('{:.05f}s {}'.format(row['sum_elapsed'],
-                                                row['file']))
-            stream.writeln()
+            table.add_row(['{:.05f}s'.format(row['sum_elapsed']),
+                           row['file']])
+        stream.writeln(table.get_string())
+        stream.writeln()
 
-        # Display the total time spent in tests
-        stream.writeln('-'*10)
-        stream.writeln()
-        stream.writeln('Total time: {:.05f}s'.format(TestTime.get_total_time()))
-        
-        stream.writeln()
+        stream.writeln('*** Total test time: {:.05f}s'.format(TestTime.get_total_time()))
         
     def display_slowest_setups(self, stream):
         """Prints a report regarding the slowest setUp/tearDown times."""
+        table = prettytable.PrettyTable(['Elapsed', 'File', 'Method'])
+        table.align['File'] = 'l'
+        table.align['Method'] = 'l'
+
+        stream.writeln('Per setup breakdown')
+
         slowest_tests = SetupTime.get_slowest_tests(10)
         for row in slowest_tests:
-            stream.writeln('{:.05f}s {}'.format(row['elapsed'],
-                                                row['file'])) 
-            stream.writeln('{:9}{}.{}.{}'.format('',
-                                                 row['module'],
-                                                 row['class'],
-                                                 row['func']))
-            stream.writeln()
-
-        stream.writeln('-'*10)
+            table.add_row(['{:.05f}s'.format(row['elapsed']),
+                          row['file'],
+                          '{}.{}.{}'.format(
+                              row['module'], row['class'], row['func'])])
+        stream.writeln(table.get_string())
         stream.writeln()
 
+        stream.writeln('Per file breakdown')
+        table = prettytable.PrettyTable(['Elapsed', 'File'])
+        table.align['File'] = 'l'
         # Display the slowest test files
         slowest_files = SetupTime.get_slowest_files(10)
         for row in slowest_files:
-            stream.writeln('{:.05f}s {}'.format(row['sum_elapsed'],
-                                                row['file']))
-            stream.writeln()
+            table.add_row(['{:.05f}s'.format(row['sum_elapsed']),
+                          row['file']])
+        
+        stream.writeln(table.get_string())
 
         # Display the total time spent in tests
-        stream.writeln('-'*10)
         stream.writeln()
-        stream.writeln('Total time: {:.05f}s'.format(SetupTime.get_total_time()))
-        
-        stream.writeln()
+        stream.writeln('***  Total setup time: {:.05f}s'.format(SetupTime.get_total_time()))
     
     def finalize(self, result):
         """Perform final cleanup for this plugin."""
