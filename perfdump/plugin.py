@@ -132,21 +132,22 @@ class PerfDumpPlugin(Plugin):
         self.db.commit()
 
         stream.writeln()
-        self.draw_header(stream, "+ 10 slowest test times +")
-        
-        self.display_slowest_tests(stream)
-        
-        stream.writeln()
-        self.draw_header(stream, "+ 10 slowest setup times +")
+        self.draw_header(stream, "10 SLOWEST SETUPS")
         self.display_slowest_setups(stream)
+
+        stream.writeln()
+        self.draw_header(stream, "10 SLOWEST TESTS")
+        self.display_slowest_tests(stream)
+        stream.writeln()
 
         if self.html_output_file:
             HtmlReport.write(self.html_output_file)
 
     def draw_header(self, stream, header):
         """Draw header with underline"""
-        stream.writeln(header)
-        stream.writeln('~' * len(header))
+        stream.writeln('=' * (len(header) + 4))
+        stream.writeln('| ' + header + ' |')
+        stream.writeln('=' * (len(header) + 4))
         stream.writeln()
 
     def draw_divider(self, stream):
@@ -181,7 +182,7 @@ class PerfDumpPlugin(Plugin):
         stream.writeln(table.get_string())
         stream.writeln()
 
-        stream.writeln('*** Total test time: {:.05f}s'.format(TestTime.get_total_time()))
+        stream.writeln('Total test time: {:.05f}s'.format(TestTime.get_total_time()))
         
     def display_slowest_setups(self, stream):
         """Prints a report regarding the slowest setUp/tearDown times."""
@@ -213,7 +214,7 @@ class PerfDumpPlugin(Plugin):
 
         # Display the total time spent in tests
         stream.writeln()
-        stream.writeln('***  Total setup time: {:.05f}s'.format(SetupTime.get_total_time()))
+        stream.writeln('Total setup time: {:.05f}s'.format(SetupTime.get_total_time()))
     
     def finalize(self, result):
         """Perform final cleanup for this plugin."""
