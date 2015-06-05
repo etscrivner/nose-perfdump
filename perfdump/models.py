@@ -184,7 +184,10 @@ class BaseTimeModel(object):
         
         """
         cur = cls.get_cursor()
-        q = "SELECT file, SUM(elapsed) as sum_elapsed FROM {} ORDER BY sum_elapsed DESC LIMIT {}"
+        q = (
+            "SELECT file, SUM(elapsed) as sum_elapsed FROM {} GROUP BY file"
+            " ORDER BY sum_elapsed DESC LIMIT {}"
+        )
         cur.execute(q.format(cls.meta['table'], num))
         result = cur.fetchall()
         # Don't return the weird invalid row if no tests were run
@@ -197,7 +200,6 @@ class BaseTimeModel(object):
         """Returns the total time taken across all results.
         
         :rtype: float
-        
         """
         cur = cls.get_cursor()
         q = "SELECT SUM(elapsed) FROM {}"
