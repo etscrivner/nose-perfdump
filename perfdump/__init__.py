@@ -30,4 +30,4 @@
 from perfdump.plugin import *
 
 
-__version__ = '1.4'
+__version__ = '1.6'
