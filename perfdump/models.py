@@ -171,7 +171,11 @@ class BaseTimeModel(object):
         
         """
         cur = cls.get_cursor()
-        q = "SELECT * FROM {} ORDER BY elapsed DESC LIMIT {}"
+        q = (
+            "SELECT file, module, class, func, AVG(elapsed) as elapsed "
+            "FROM {} GROUP BY module, class, func ORDER BY elapsed DESC "
+            "LIMIT {}"
+        )
         cur.execute(q.format(cls.meta['table'], num))
         return cur.fetchall()
     
