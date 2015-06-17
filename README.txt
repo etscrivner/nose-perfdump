@@ -1,9 +1,7 @@
 nose-perfdump
 =============
 
-Nose plugin that collects per-test performance metrics into an SQLite3 database and reports the slowest tests, test files, and total time
-spent in tests. It is designed to make profiling tests to improve their speed
-easier.
+Nose plugin to help profile and determine the slowest tests in your test suite.
 
 # Install
 
